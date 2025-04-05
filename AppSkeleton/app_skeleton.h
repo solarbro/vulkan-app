@@ -1,15 +1,20 @@
 #pragma once
 #include <vulkan/vulkan.h>
+#include <vector>
 
 namespace vkapp
 {
     constexpr int kErrorInitializationFailed = 1;
+    constexpr int kErrorInvalidArg = 2;
 
     class Skeleton
     {
         VkInstance m_instance;
+        std::vector<VkPhysicalDevice> m_devices;
+        VkPhysicalDevice m_dev;
 
         int createVkInstance();
+        int enumerateDevices();
     public:
         Skeleton();
         ~Skeleton();
@@ -21,6 +26,7 @@ namespace vkapp
         struct Options
         {
             size_t m_gfxHeapSize;
+            size_t m_device;
 
             Options();
         };

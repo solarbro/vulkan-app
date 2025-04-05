@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(VulkanApp)
+set(CMAKE_CXX_STANDARD 20)
 
 # Use Vulkan SDK environment variable
 find_package(Vulkan REQUIRED)
