@@ -3,7 +3,7 @@
 #include <iostream>
 
 vkapp::Skeleton::Options::Options()
-    : m_gfxHeapSize(1024llu * 1024llu * 1024llu),
+    : m_gfxHeapSize(0), m_sharedHeadSize(0),
       m_device(0) // Use device 0 by default
 {}
 
@@ -161,12 +161,33 @@ int vkapp::Skeleton::initializeUtil(const Options *option) {
   }
   m_physicalDevice = m_devices[option->m_device];
   std::cout << "Using device " << option->m_device << std::endl;
-  // Allocate GPU memory pool
+  {
+    const int res = initializeDevice();
+    if (res != 0)
+      return res;
+  }
+  // Allocate memory
+  {
+    const int res = m_sharedMem.initialize(m_dev, m_physicalDevice,
+                                           option->m_sharedHeadSize,
+                                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+    if (res != 0)
+      return res;
+  }
+  {
+    const int res =
+        m_deviceMem.initialize(m_dev, m_physicalDevice, option->m_gfxHeapSize,
+                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    if (res != 0)
+      return res;
+  }
   return 0;
 }
 
 int vkapp::Skeleton::finalizeUtil() {
   std::cout << "## Sample Application: finalizing ##\n";
+  m_deviceMem.finalize();
+  m_sharedMem.finalize();
   if (m_dev)
     vkDestroyDevice(m_dev, nullptr);
   if (m_instance)

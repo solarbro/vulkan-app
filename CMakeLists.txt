@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 20)
 find_package(Vulkan REQUIRED)
 
 add_library(AppSkeleton STATIC
+	AppSkeleton/vkapp_allocator.cpp
 	AppSkeleton/vkapp_allocator.h
 	AppSkeleton/vkapp_gfx.cpp
 	AppSkeleton/vkapp_gfx.h

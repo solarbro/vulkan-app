@@ -13,7 +13,8 @@ public:
     // Initialize framework
     {
       vkapp::Skeleton::Options initOpt;
-      initOpt.m_gfxHeapSize = 4llu * 1024llu * 1024llu * 1024llu;
+      initOpt.m_gfxHeapSize = 1024llu;
+      initOpt.m_sharedHeadSize = 1024llu;
       const int res = initializeUtil(&initOpt);
       if (res != 0)
         return res;
