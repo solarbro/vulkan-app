@@ -1,3 +1,3 @@
-#include "vk_gfx.h"
+#include "vkapp_gfx.h"
 
 vkapp::BufferSpec &vkapp::BufferSpec::init() { return *this; }

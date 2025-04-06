@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
-#include <vk_gfx.h>
+#include <vkapp_allocator.h>
+#include <vkapp_gfx.h>
 #include <vulkan/vulkan.h>
 
 namespace vkapp {

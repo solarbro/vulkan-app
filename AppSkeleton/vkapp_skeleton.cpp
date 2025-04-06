@@ -1,4 +1,4 @@
-#include "app_skeleton.h"
+#include "vkapp_skeleton.h"
 #include <format>
 #include <iostream>
 
@@ -161,6 +161,7 @@ int vkapp::Skeleton::initializeUtil(const Options *option) {
   }
   m_physicalDevice = m_devices[option->m_device];
   std::cout << "Using device " << option->m_device << std::endl;
+  // Allocate GPU memory pool
   return 0;
 }
 
