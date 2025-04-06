@@ -1,20 +1,26 @@
 #pragma once
 #include <vulkan/vulkan.h>
 #include <vector>
+#include <vk_gfx.h>
 
 namespace vkapp
 {
     constexpr int kErrorInitializationFailed = 1;
     constexpr int kErrorInvalidArg = 2;
+    constexpr int kErrorNoComputeQueue = 3;
 
     class Skeleton
     {
         VkInstance m_instance;
         std::vector<VkPhysicalDevice> m_devices;
-        VkPhysicalDevice m_dev;
+        VkPhysicalDevice m_physicalDevice;
+        VkDevice m_dev;
+        uint32_t m_queueIdx;
+        VkQueue m_queue;
 
         int createVkInstance();
         int enumerateDevices();
+        int initializeDevice();
     public:
         Skeleton();
         ~Skeleton();

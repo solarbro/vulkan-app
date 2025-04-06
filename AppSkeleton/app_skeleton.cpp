@@ -71,6 +71,25 @@ namespace
 
         std::cout << std::endl;
     }
+
+    int findComputeQueue(VkPhysicalDevice dev)
+    {
+#if 0
+        VkPhysicalDeviceProperties props;
+        vkGetPhysicalDeviceProperties(dev, &props);
+#endif
+        VkQueueFamilyProperties queueProps[32];
+        uint32_t queueCount = 32;
+        vkGetPhysicalDeviceQueueFamilyProperties(dev, &queueCount, queueProps);
+        for (uint32_t i = 0; i < queueCount; ++i)
+        {
+            if (queueProps[i].queueFlags & VK_QUEUE_COMPUTE_BIT)
+            {
+                return i;
+            }
+        }
+        return -1; // No compute queue found
+    }
 }
 
 int vkapp::Skeleton::enumerateDevices()
@@ -88,9 +107,41 @@ int vkapp::Skeleton::enumerateDevices()
     return 0;
 }
 
+int vkapp::Skeleton::initializeDevice()
+{
+    const int queueIdx = findComputeQueue(m_physicalDevice);
+    if (queueIdx < 0)
+    {
+        std::cerr << "Could not find a compute queue\n";
+        return kErrorNoComputeQueue;
+    }
+    m_queueIdx = static_cast<uint32_t>(queueIdx);
+    // Create logical device
+    const float priority = 1.0f;
+    VkDeviceQueueCreateInfo queueCreate{ VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO };
+    queueCreate.queueFamilyIndex = m_queueIdx;
+    queueCreate.queueCount = 1;
+    queueCreate.pQueuePriorities = &priority;
+
+    VkDeviceCreateInfo devCreate{ VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO };
+    devCreate.queueCreateInfoCount = 1;
+    devCreate.pQueueCreateInfos = &queueCreate;
+
+    if (vkCreateDevice(m_physicalDevice, &devCreate, nullptr, &m_dev) != VK_SUCCESS)
+    {
+        std::cerr << "Failed to initialize logical device!\n";
+        return kErrorInitializationFailed;
+    }
+    vkGetDeviceQueue(m_dev, m_queueIdx, 0, &m_queue);
+    return 0;
+}
+
 vkapp::Skeleton::Skeleton()
     : m_instance(nullptr)
+    , m_physicalDevice(nullptr)
     , m_dev(nullptr)
+    , m_queueIdx(0)
+    , m_queue(nullptr)
 {
 }
 
@@ -117,14 +168,15 @@ int vkapp::Skeleton::initializeUtil(const Options* option)
         std::cerr << std::format("Device {} was selected, but only {} devices were discovered.\n", option->m_device, m_devices.size());
         return kErrorInvalidArg;
     }
-    m_dev = m_devices[option->m_device];
+    m_physicalDevice = m_devices[option->m_device];
     std::cout << "Using device " << option->m_device << std::endl;
     return 0;
 }
 
 int vkapp::Skeleton::finalizeUtil()
 {
-    if (m_instance)
-        vkDestroyInstance(m_instance, nullptr);
+    std::cout << "## Sample Application: finalizing ##\n";
+    if (m_dev) vkDestroyDevice(m_dev, nullptr);
+    if (m_instance) vkDestroyInstance(m_instance, nullptr);
     return 0;
 }

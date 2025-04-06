@@ -2,26 +2,19 @@ cmake_minimum_required(VERSION 3.10)
 project(VulkanApp)
 set(CMAKE_CXX_STANDARD 20)
 
-# Use Vulkan SDK environment variable
 find_package(Vulkan REQUIRED)
-#if(NOT DEFINED ENV{VULKAN_SDK})
-#    message(FATAL_ERROR "VULKAN_SDK environment variable is not set.")
-#endif()
-
-#add_library(libvulkan INTERFACE)
-#target_include_directories(libvulkan
-#	INTERFACE "$ENV{VULKAN_SDK}/Include"
-#)
-#target_link_libraries(libvulkan 
-#	INTERFACE "$ENV{VULKAN_SDK}/Lib/vulkan-1.lib"
-#)
 
 add_library(AppSkeleton STATIC
 	AppSkeleton/app_skeleton.cpp
 	AppSkeleton/app_skeleton.h
+	AppSkeleton/vk_gfx.cpp
+	AppSkeleton/vk_gfx.h
 )
 target_link_libraries(AppSkeleton 
 	PRIVATE Vulkan::Vulkan
+)
+target_include_directories(AppSkeleton 
+	PRIVATE AppSkeleton
 )
 
 add_library(iAppSkeleton INTERFACE)
